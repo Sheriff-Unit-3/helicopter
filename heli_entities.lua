@@ -21,7 +21,7 @@ local color_def = {
 	["#ff0098"] = "Magenta",
 }
 
-minetest.register_entity("nss_helicopter:seat_base",{
+core.register_entity("nss_helicopter:seat_base",{
 initial_properties = {
 	physical = false,
 	collide_with_objects=false,
@@ -32,18 +32,18 @@ initial_properties = {
 	},
 
     on_activate = function(self,std)
-	    self.sdata = minetest.deserialize(std) or {}
+	    self.sdata = core.deserialize(std) or {}
 	    if self.sdata.remove then self.object:remove() end
     end,
 
     get_staticdata=function(self)
       self.sdata.remove=true
-      return minetest.serialize(self.sdata)
+      return core.serialize(self.sdata)
     end,
 
 })
 
-minetest.register_entity("nss_helicopter:heli", {
+core.register_entity("nss_helicopter:heli", {
 	initial_properties = {
 		physical = true,
 		collide_with_objects = true,
@@ -74,7 +74,7 @@ minetest.register_entity("nss_helicopter:heli", {
     _by_mouse = true, --helicopter.turn_player_look,
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
-        return minetest.serialize({
+        return core.serialize({
             stored_energy = self.energy,
             stored_owner = self.owner,
             stored_hp = self.hp_max,
@@ -85,13 +85,13 @@ minetest.register_entity("nss_helicopter:heli", {
 
 	on_activate = function(self, staticdata, dtime_s)
         if staticdata ~= "" and staticdata ~= nil then
-            local data = minetest.deserialize(staticdata) or {}
+            local data = core.deserialize(staticdata) or {}
             self.energy = data.stored_energy
             self.owner = data.stored_owner
             self.hp_max = data.stored_hp
             self.color = data.stored_color
             self.driver_name = data.stored_driver_name
-            --minetest.debug("loaded: ", self.energy)
+            --core.debug("loaded: ", self.energy)
             local properties = self.object:get_properties()
             properties.infotext = data.stored_owner .. S(" nice helicopter")
             self.object:set_properties(properties)
@@ -99,16 +99,16 @@ minetest.register_entity("nss_helicopter:heli", {
 
         helicopter.paint(self, self.color)
         local pos = self.object:get_pos()
-	    local pointer=minetest.add_entity(pos,'nss_helicopter:pointer')
+	    local pointer=core.add_entity(pos,'nss_helicopter:pointer')
         local energy_indicator_angle = ((self.energy * 18) - 90) * -1
 	    pointer:set_attach(self.object,'',{x=0,y=11.26,z=9.37},{x=0,y=0,z=energy_indicator_angle})
 	    self.pointer = pointer
 
-        local pilot_seat_base=minetest.add_entity(pos,'nss_helicopter:seat_base')
+        local pilot_seat_base=core.add_entity(pos,'nss_helicopter:seat_base')
         pilot_seat_base:set_attach(self.object,'',{x=4.2,y=10,z=2},{x=0,y=0,z=0})
 	    self.pilot_seat_base = pilot_seat_base
 
-        local passenger_seat_base=minetest.add_entity(pos,'nss_helicopter:seat_base')
+        local passenger_seat_base=core.add_entity(pos,'nss_helicopter:seat_base')
         passenger_seat_base:set_attach(self.object,'',{x=-4.2,y=10,z=2},{x=0,y=0,z=0})
 	    self.passenger_seat_base = passenger_seat_base
 
@@ -166,7 +166,7 @@ minetest.register_entity("nss_helicopter:heli", {
 
         local is_attached = false
         if self.owner then
-            local player = minetest.get_player_by_name(self.owner)
+            local player = core.get_player_by_name(self.owner)
 
             if player then
                 local player_attach = player:get_attach()
@@ -183,7 +183,7 @@ minetest.register_entity("nss_helicopter:heli", {
             if impact > 5 then
                 --self.damage = self.damage + impact --sum the impact value directly to damage meter
                 local curr_pos = self.object:get_pos()
-                minetest.sound_play("nssh_collision", {
+                core.sound_play("nssh_collision", {
                     to_player = self.driver_name,
 	                --pos = curr_pos,
 	                --max_hear_distance = 5,
@@ -197,7 +197,7 @@ minetest.register_entity("nss_helicopter:heli", {
             end
 
             --update hud
-            local player = minetest.get_player_by_name(self.driver_name)
+            local player = core.get_player_by_name(self.driver_name)
             if helicopter.helicopter_last_time_command > 0.3 then
                 helicopter.helicopter_last_time_command = 0
                 update_heli_hud(player)
@@ -207,7 +207,7 @@ minetest.register_entity("nss_helicopter:heli", {
             local can_stop = true
             if self.owner and self.driver_name and touching_ground == false then
                 -- attach the driver again
-                local player = minetest.get_player_by_name(self.owner)
+                local player = core.get_player_by_name(self.owner)
                 if player then
                     helicopter.attach(self, player)
                     can_stop = false
@@ -220,7 +220,7 @@ minetest.register_entity("nss_helicopter:heli", {
                     helicopter.sound_and_animation_manager(self)
 
                     --why its here? cause if the sound is attached, player must so
-                    local player_owner = minetest.get_player_by_name(self.owner)
+                    local player_owner = core.get_player_by_name(self.owner)
                     if player_owner then remove_heli_hud(player_owner) end
                 end
             end
@@ -269,7 +269,7 @@ minetest.register_entity("nss_helicopter:heli", {
                     --lets paint!!!!
 				    local color = item_name:sub(indx+1)
 				    local colstr = helicopter.colors[color]
-                    --minetest.chat_send_all(color ..' '.. dump(colstr))
+                    --core.chat_send_all(color ..' '.. dump(colstr))
 				    if colstr then
                         helicopter.paint(self, colstr)
 					    itmstck:set_count(itmstck:get_count()-1)
@@ -282,7 +282,7 @@ minetest.register_entity("nss_helicopter:heli", {
 					    --mobkit.hurt(self,toolcaps.damage_groups.fleshy - 1)
 					    --mobkit.make_sound(self,'hit')
                         self.hp_max = self.hp_max - 10
-                        minetest.sound_play("nssh_collision", {
+                        core.sound_play("nssh_collision", {
 	                        object = self.object,
 	                        max_hear_distance = 5,
 	                        gain = 1.0,
@@ -311,7 +311,7 @@ minetest.register_entity("nss_helicopter:heli", {
                     end
 
                     if not pinv:room_for_item("main", stack) then
-                        minetest.chat_send_player(puncher:get_player_name(),
+                        core.chat_send_player(puncher:get_player_name(),
                             S("You do not have room in your inventory"))
                     else
                         if self.pointer then self.pointer:remove() end
@@ -343,12 +343,12 @@ minetest.register_entity("nss_helicopter:heli", {
             self.owner = name
         end
 
-        if self.owner == name or minetest.check_player_privs(clicker, {protection_bypass=true}) then
+        if self.owner == name or core.check_player_privs(clicker, {protection_bypass=true}) then
 		    if name == self.driver_name then
 			    -- driver clicked the object => driver gets off the vehicle
                 helicopter.dettach(self, clicker)
                 if self._passenger then
-                    local passenger = minetest.get_player_by_name(self._passenger)
+                    local passenger = core.get_player_by_name(self._passenger)
                     if passenger then
                         helicopter.dettach_pax(self, passenger)
                     end

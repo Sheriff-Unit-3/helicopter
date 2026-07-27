@@ -15,15 +15,15 @@ function helicopter.vector_length_sq(v)
 	return v.x * v.x + v.y * v.y + v.z * v.z
 end
 
-if not minetest.global_exists("matrix3") then
-	dofile(minetest.get_modpath("nss_helicopter") .. DIR_DELIM .. "matrix.lua")
+if not core.global_exists("matrix3") then
+	dofile(core.get_modpath("nss_helicopter") .. DIR_DELIM .. "matrix.lua")
 end
 
 function helicopter.check_node_below(obj)
 	local pos_below = obj:get_pos()
 	pos_below.y = pos_below.y - 0.1
-	local node_below = minetest.get_node(pos_below).name
-	local nodedef = minetest.registered_nodes[node_below]
+	local node_below = core.get_node(pos_below).name
+	local nodedef = core.registered_nodes[node_below]
 	local touching_ground = not nodedef or -- unknown nodes are solid
 			nodedef.walkable or false
 	local liquid_below = not touching_ground and nodedef.liquidtype ~= "none"
@@ -37,7 +37,7 @@ function helicopter.heli_control(self, dtime, touching_ground, liquid_below, vel
     if self.driver_name == nil then
         return
     end
-    local driver = minetest.get_player_by_name(self.driver_name)
+    local driver = core.get_player_by_name(self.driver_name)
 
 	if not driver then
 		-- there is no driver (eg. because driver left)
@@ -57,7 +57,7 @@ function helicopter.heli_control(self, dtime, touching_ground, liquid_below, vel
             self._by_mouse = true
         end
     end
-    
+
 	local rot = self.object:get_rotation()
     local position = self.object:get_pos()
 
@@ -134,7 +134,7 @@ function helicopter.heli_control(self, dtime, touching_ground, liquid_below, vel
         else
             rot.y = yaw
         end
-        
+
 
 	else
 		rot.x = 0
@@ -161,7 +161,7 @@ function helicopter.heli_control(self, dtime, touching_ground, liquid_below, vel
             self.pointer:set_attach(self.object,'',{x=0,y=11.26,z=9.37},{x=0,y=0,z=energy_indicator_angle})
         else
             --in case it have lost the entity by some conflict
-            self.pointer=minetest.add_entity({x=0,y=11.26,z=9.37},"nss_helicopter:pointer")
+            self.pointer=core.add_entity({x=0,y=11.26,z=9.37},"nss_helicopter:pointer")
             self.pointer:set_attach(self.object,'',{x=0,y=11.26,z=9.37},{x=0,y=0,z=energy_indicator_angle})
         end
     end
@@ -170,7 +170,7 @@ function helicopter.heli_control(self, dtime, touching_ground, liquid_below, vel
 		if touching_ground or liquid_below then
             --criar uma fucao pra isso pois ela repete na linha 268
 			-- sound and animation
-            if self.sound_handle then minetest.sound_stop(self.sound_handle) end
+            if self.sound_handle then core.sound_stop(self.sound_handle) end
 			self.object:set_animation_frame_speed(0)
 			-- gravity
 			self.object:set_acceleration(vector.multiply(helicopter.vector_up, -helicopter.gravity))

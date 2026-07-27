@@ -4,9 +4,9 @@ function update_heli_hud(player)
     --[[
     local player_name = player:get_player_name()
 
-	hour = minetest.env:get_timeofday() * 24
+	hour = core.env:get_timeofday() * 24
 	hour = math.ceil(hour)
-    
+
     -- Get the dig and place count from storage, or default to 0
     local meta        = player:get_meta()
     local time_text   = "Time of day: " .. hour .. "h "
@@ -30,7 +30,7 @@ function update_heli_hud(player)
             scale     = { x = 1, y = 1},
             alignment = { x = 1, y = 0 },
         })
-        
+
         ids["title"] = player:hud_add({
             hud_elem_type = "text",
             position  = {x = 1, y = 0.5},

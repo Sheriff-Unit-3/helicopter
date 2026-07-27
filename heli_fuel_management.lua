@@ -3,25 +3,25 @@
 --
 helicopter.fuel = {['biofuel:biofuel'] = 1,['biofuel:bottle_fuel'] = 1,['biofuel:phial_fuel'] = 0.25, ['biofuel:fuel_can'] = 10}
 
-minetest.register_entity("nss_helicopter:pointer",{
+core.register_entity("nss_helicopter:pointer",{
 initial_properties = {
 	physical = false,
 	collide_with_objects=false,
-	pointable=false,
+	pointable = false,
 	visual = "mesh",
 	mesh = "pointer.b3d",
 	textures = {"nss_helicopter_clay.png"},
 	},
 
 on_activate = function(self,std)
-	self.sdata = minetest.deserialize(std) or {}
+	self.sdata = core.deserialize(std) or {}
 	if self.sdata.remove then self.object:remove() end
 end,
 
 get_staticdata=function(self)
 
   self.sdata.remove=true
-  return minetest.serialize(self.sdata)
+  return core.serialize(self.sdata)
 end,
 
 })
@@ -50,7 +50,7 @@ function helicopter.updateIndicator(self)
 end
 
 function helicopter.loadFuel(self, player_name)
-    local player = minetest.get_player_by_name(player_name)
+    local player = core.get_player_by_name(player_name)
     if not player then return end
 
     local inv = player:get_inventory()
