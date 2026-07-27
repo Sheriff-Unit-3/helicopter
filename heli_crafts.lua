@@ -61,9 +61,9 @@ if core.get_modpath("default") then
 	core.register_craft({
 		output = "nss_helicopter:blades",
 		recipe = {
-			{"",                    "default:steel_ingot", ""},
-			{"default:steel_ingot", "default:diamond",         "default:steel_ingot"},
-			{"",                    "default:steel_ingot", ""},
+			{"", "default:steel_ingot", ""},
+			{"default:steel_ingot", "default:diamond", "default:steel_ingot"},
+			{"", "default:steel_ingot", ""},
 		}
 	})
 	core.register_craft({
@@ -77,7 +77,7 @@ if core.get_modpath("default") then
 	core.register_craft({
 		output = "nss_helicopter:heli",
 		recipe = {
-			{"",                  "nss_helicopter:blades"},
+			{"", "nss_helicopter:blades"},
 			{"nss_helicopter:blades", "nss_helicopter:cabin"},
 		}
 	})
